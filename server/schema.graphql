@@ -1,0 +1,35 @@
+type Query {
+  links: [Link!]!
+  me(id:ID!): User!
+}
+
+type Mutation {
+  createUser(name: String!, email: String!): User!
+  createLink(url: String!, description: String!): Link!
+}
+
+type Link {
+  id: ID! 
+  createdAt: DateTime!
+  description: String!
+  url: String!
+  postedBy: User
+  votes: [Vote!]!
+}
+
+type User {
+  id: ID! 
+  name: String!
+  email: String! 
+  password: String!
+  links: [Link!]!
+  votes: [Vote!]!
+}
+
+type Vote {
+  id: ID!
+  link: Link!
+  user: User!
+}
+
+scalar DateTime
