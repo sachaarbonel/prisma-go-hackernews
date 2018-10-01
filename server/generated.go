@@ -48,7 +48,7 @@ type ComplexityRoot struct {
 		Description func(childComplexity int) int
 		Url         func(childComplexity int) int
 		PostedBy    func(childComplexity int) int
-		Votes       func(childComplexity int) int
+		AllVotes    func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -71,15 +71,15 @@ type ComplexityRoot struct {
 	}
 
 	Vote struct {
-		Id   func(childComplexity int) int
-		Link func(childComplexity int) int
-		User func(childComplexity int) int
+		Id      func(childComplexity int) int
+		Link    func(childComplexity int) int
+		VotedBy func(childComplexity int) int
 	}
 }
 
 type LinkResolver interface {
 	PostedBy(ctx context.Context, obj *prisma.Link) (*prisma.User, error)
-	Votes(ctx context.Context, obj *prisma.Link) ([]prisma.Vote, error)
+	AllVotes(ctx context.Context, obj *prisma.Link) ([]prisma.Vote, error)
 }
 type MutationResolver interface {
 	CreateUser(ctx context.Context, name string, email string) (prisma.User, error)
@@ -95,7 +95,7 @@ type UserResolver interface {
 }
 type VoteResolver interface {
 	Link(ctx context.Context, obj *prisma.Vote) (prisma.Link, error)
-	User(ctx context.Context, obj *prisma.Vote) (prisma.User, error)
+	VotedBy(ctx context.Context, obj *prisma.Vote) (prisma.User, error)
 }
 
 func field_Mutation_createUser_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
@@ -254,12 +254,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Link.PostedBy(childComplexity), true
 
-	case "Link.votes":
-		if e.complexity.Link.Votes == nil {
+	case "Link.allVotes":
+		if e.complexity.Link.AllVotes == nil {
 			break
 		}
 
-		return e.complexity.Link.Votes(childComplexity), true
+		return e.complexity.Link.AllVotes(childComplexity), true
 
 	case "Mutation.createUser":
 		if e.complexity.Mutation.CreateUser == nil {
@@ -360,12 +360,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Vote.Link(childComplexity), true
 
-	case "Vote.user":
-		if e.complexity.Vote.User == nil {
+	case "Vote.votedBy":
+		if e.complexity.Vote.VotedBy == nil {
 			break
 		}
 
-		return e.complexity.Vote.User(childComplexity), true
+		return e.complexity.Vote.VotedBy(childComplexity), true
 
 	}
 	return 0, false
@@ -453,10 +453,10 @@ func (ec *executionContext) _Link(ctx context.Context, sel ast.SelectionSet, obj
 				out.Values[i] = ec._Link_postedBy(ctx, field, obj)
 				wg.Done()
 			}(i, field)
-		case "votes":
+		case "allVotes":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Link_votes(ctx, field, obj)
+				out.Values[i] = ec._Link_allVotes(ctx, field, obj)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
@@ -586,7 +586,7 @@ func (ec *executionContext) _Link_postedBy(ctx context.Context, field graphql.Co
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Link_votes(ctx context.Context, field graphql.CollectedField, obj *prisma.Link) graphql.Marshaler {
+func (ec *executionContext) _Link_allVotes(ctx context.Context, field graphql.CollectedField, obj *prisma.Link) graphql.Marshaler {
 	rctx := &graphql.ResolverContext{
 		Object: "Link",
 		Args:   nil,
@@ -594,7 +594,7 @@ func (ec *executionContext) _Link_votes(ctx context.Context, field graphql.Colle
 	}
 	ctx = graphql.WithResolverContext(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(ctx context.Context) (interface{}, error) {
-		return ec.resolvers.Link().Votes(ctx, obj)
+		return ec.resolvers.Link().AllVotes(ctx, obj)
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -1218,10 +1218,10 @@ func (ec *executionContext) _Vote(ctx context.Context, sel ast.SelectionSet, obj
 				}
 				wg.Done()
 			}(i, field)
-		case "user":
+		case "votedBy":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Vote_user(ctx, field, obj)
+				out.Values[i] = ec._Vote_votedBy(ctx, field, obj)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
@@ -1284,7 +1284,7 @@ func (ec *executionContext) _Vote_link(ctx context.Context, field graphql.Collec
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Vote_user(ctx context.Context, field graphql.CollectedField, obj *prisma.Vote) graphql.Marshaler {
+func (ec *executionContext) _Vote_votedBy(ctx context.Context, field graphql.CollectedField, obj *prisma.Vote) graphql.Marshaler {
 	rctx := &graphql.ResolverContext{
 		Object: "Vote",
 		Args:   nil,
@@ -1292,7 +1292,7 @@ func (ec *executionContext) _Vote_user(ctx context.Context, field graphql.Collec
 	}
 	ctx = graphql.WithResolverContext(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(ctx context.Context) (interface{}, error) {
-		return ec.resolvers.Vote().User(ctx, obj)
+		return ec.resolvers.Vote().VotedBy(ctx, obj)
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -2615,9 +2615,6 @@ var parsedSchema = gqlparser.MustLoadSchema(
 type Mutation {
   createUser(name: String!, email: String!): User!
   createLink(url: String!, description: String!): Link!
-  # commentArticle(articleId: ID!): Comment!
-  # replyToComment(commentId: ID!): Comment!
-  # likeComment(commentId: ID!, userId: ID!): Like!
 }
 
 type Link {
@@ -2626,7 +2623,7 @@ type Link {
   description: String!
   url: String!
   postedBy: User
-  votes: [Vote!]!
+  allVotes: [Vote!]!
 }
 
 type User {
@@ -2641,7 +2638,7 @@ type User {
 type Vote {
   id: ID!
   link: Link!
-  user: User!
+  votedBy: User!
 }
 
 scalar DateTime`},

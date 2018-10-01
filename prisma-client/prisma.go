@@ -1795,9 +1795,9 @@ type LinkWhereInput struct {
 	UrlEndsWith              *string         `json:"url_ends_with,omitempty"`
 	UrlNotEndsWith           *string         `json:"url_not_ends_with,omitempty"`
 	PostedBy                 *UserWhereInput `json:"postedBy,omitempty"`
-	VotesEvery               *VoteWhereInput `json:"votes_every,omitempty"`
-	VotesSome                *VoteWhereInput `json:"votes_some,omitempty"`
-	VotesNone                *VoteWhereInput `json:"votes_none,omitempty"`
+	AllVotesEvery            *VoteWhereInput `json:"allVotes_every,omitempty"`
+	AllVotesSome             *VoteWhereInput `json:"allVotes_some,omitempty"`
+	AllVotesNone             *VoteWhereInput `json:"allVotes_none,omitempty"`
 	And                      *LinkWhereInput `json:"AND,omitempty"`
 	Or                       *LinkWhereInput `json:"OR,omitempty"`
 	Not                      *LinkWhereInput `json:"NOT,omitempty"`
@@ -1805,10 +1805,10 @@ type LinkWhereInput struct {
 
 // UserUpdateWithoutLinksDataInput input struct docs
 type UserUpdateWithoutLinksDataInput struct {
-	Name     *string                         `json:"name,omitempty"`
-	Email    *string                         `json:"email,omitempty"`
-	Password *string                         `json:"password,omitempty"`
-	Votes    *VoteUpdateManyWithoutUserInput `json:"votes,omitempty"`
+	Name     *string                            `json:"name,omitempty"`
+	Email    *string                            `json:"email,omitempty"`
+	Password *string                            `json:"password,omitempty"`
+	Votes    *VoteUpdateManyWithoutVotedByInput `json:"votes,omitempty"`
 }
 
 // VoteWhereInput input struct docs
@@ -1828,15 +1828,15 @@ type VoteWhereInput struct {
 	IDEndsWith      *string         `json:"id_ends_with,omitempty"`
 	IDNotEndsWith   *string         `json:"id_not_ends_with,omitempty"`
 	Link            *LinkWhereInput `json:"link,omitempty"`
-	User            *UserWhereInput `json:"user,omitempty"`
+	VotedBy         *UserWhereInput `json:"votedBy,omitempty"`
 	And             *VoteWhereInput `json:"AND,omitempty"`
 	Or              *VoteWhereInput `json:"OR,omitempty"`
 	Not             *VoteWhereInput `json:"NOT,omitempty"`
 }
 
-// VoteCreateWithoutUserInput input struct docs
-type VoteCreateWithoutUserInput struct {
-	Link *LinkCreateOneWithoutVotesInput `json:"link,omitempty"`
+// VoteCreateWithoutVotedByInput input struct docs
+type VoteCreateWithoutVotedByInput struct {
+	Link *LinkCreateOneWithoutAllVotesInput `json:"link,omitempty"`
 }
 
 // VoteUpdateWithWhereUniqueWithoutLinkInput input struct docs
@@ -1845,24 +1845,24 @@ type VoteUpdateWithWhereUniqueWithoutLinkInput struct {
 	Data  *VoteUpdateWithoutLinkDataInput `json:"data,omitempty"`
 }
 
-// LinkCreateOneWithoutVotesInput input struct docs
-type LinkCreateOneWithoutVotesInput struct {
-	Create  *LinkCreateWithoutVotesInput `json:"create,omitempty"`
-	Connect *LinkWhereUniqueInput        `json:"connect,omitempty"`
+// LinkCreateOneWithoutAllVotesInput input struct docs
+type LinkCreateOneWithoutAllVotesInput struct {
+	Create  *LinkCreateWithoutAllVotesInput `json:"create,omitempty"`
+	Connect *LinkWhereUniqueInput           `json:"connect,omitempty"`
 }
 
-// VoteUpdateManyWithoutUserInput input struct docs
-type VoteUpdateManyWithoutUserInput struct {
-	Create     *VoteCreateWithoutUserInput                `json:"create,omitempty"`
-	Delete     *VoteWhereUniqueInput                      `json:"delete,omitempty"`
-	Connect    *VoteWhereUniqueInput                      `json:"connect,omitempty"`
-	Disconnect *VoteWhereUniqueInput                      `json:"disconnect,omitempty"`
-	Update     *VoteUpdateWithWhereUniqueWithoutUserInput `json:"update,omitempty"`
-	Upsert     *VoteUpsertWithWhereUniqueWithoutUserInput `json:"upsert,omitempty"`
+// VoteUpdateManyWithoutVotedByInput input struct docs
+type VoteUpdateManyWithoutVotedByInput struct {
+	Create     *VoteCreateWithoutVotedByInput                `json:"create,omitempty"`
+	Delete     *VoteWhereUniqueInput                         `json:"delete,omitempty"`
+	Connect    *VoteWhereUniqueInput                         `json:"connect,omitempty"`
+	Disconnect *VoteWhereUniqueInput                         `json:"disconnect,omitempty"`
+	Update     *VoteUpdateWithWhereUniqueWithoutVotedByInput `json:"update,omitempty"`
+	Upsert     *VoteUpsertWithWhereUniqueWithoutVotedByInput `json:"upsert,omitempty"`
 }
 
-// LinkCreateWithoutVotesInput input struct docs
-type LinkCreateWithoutVotesInput struct {
+// LinkCreateWithoutAllVotesInput input struct docs
+type LinkCreateWithoutAllVotesInput struct {
 	Description *string                         `json:"description,omitempty"`
 	Url         *string                         `json:"url,omitempty"`
 	PostedBy    *UserCreateOneWithoutLinksInput `json:"postedBy,omitempty"`
@@ -1888,13 +1888,13 @@ type VoteCreateManyWithoutLinkInput struct {
 
 // VoteUpdateInput input struct docs
 type VoteUpdateInput struct {
-	Link *LinkUpdateOneRequiredWithoutVotesInput `json:"link,omitempty"`
-	User *UserUpdateOneRequiredWithoutVotesInput `json:"user,omitempty"`
+	Link    *LinkUpdateOneRequiredWithoutAllVotesInput `json:"link,omitempty"`
+	VotedBy *UserUpdateOneRequiredWithoutVotesInput    `json:"votedBy,omitempty"`
 }
 
 // VoteCreateWithoutLinkInput input struct docs
 type VoteCreateWithoutLinkInput struct {
-	User *UserCreateOneWithoutVotesInput `json:"user,omitempty"`
+	VotedBy *UserCreateOneWithoutVotesInput `json:"votedBy,omitempty"`
 }
 
 // UserUpdateInput input struct docs
@@ -1903,7 +1903,7 @@ type UserUpdateInput struct {
 	Email    *string                             `json:"email,omitempty"`
 	Password *string                             `json:"password,omitempty"`
 	Links    *LinkUpdateManyWithoutPostedByInput `json:"links,omitempty"`
-	Votes    *VoteUpdateManyWithoutUserInput     `json:"votes,omitempty"`
+	Votes    *VoteUpdateManyWithoutVotedByInput  `json:"votes,omitempty"`
 }
 
 // UserCreateOneWithoutVotesInput input struct docs
@@ -1918,7 +1918,7 @@ type UserCreateInput struct {
 	Email    *string                             `json:"email,omitempty"`
 	Password *string                             `json:"password,omitempty"`
 	Links    *LinkCreateManyWithoutPostedByInput `json:"links,omitempty"`
-	Votes    *VoteCreateManyWithoutUserInput     `json:"votes,omitempty"`
+	Votes    *VoteCreateManyWithoutVotedByInput  `json:"votes,omitempty"`
 }
 
 // UserCreateWithoutVotesInput input struct docs
@@ -1952,7 +1952,7 @@ type VoteWhereUniqueInput struct {
 type LinkCreateWithoutPostedByInput struct {
 	Description *string                         `json:"description,omitempty"`
 	Url         *string                         `json:"url,omitempty"`
-	Votes       *VoteCreateManyWithoutLinkInput `json:"votes,omitempty"`
+	AllVotes    *VoteCreateManyWithoutLinkInput `json:"allVotes,omitempty"`
 }
 
 // LinkUpdateWithWhereUniqueWithoutPostedByInput input struct docs
@@ -1966,7 +1966,7 @@ type LinkUpdateInput struct {
 	Description *string                         `json:"description,omitempty"`
 	Url         *string                         `json:"url,omitempty"`
 	PostedBy    *UserUpdateOneWithoutLinksInput `json:"postedBy,omitempty"`
-	Votes       *VoteUpdateManyWithoutLinkInput `json:"votes,omitempty"`
+	AllVotes    *VoteUpdateManyWithoutLinkInput `json:"allVotes,omitempty"`
 }
 
 // UserCreateOneWithoutLinksInput input struct docs
@@ -2044,10 +2044,10 @@ type UserWhereInput struct {
 	Not                   *UserWhereInput `json:"NOT,omitempty"`
 }
 
-// VoteCreateManyWithoutUserInput input struct docs
-type VoteCreateManyWithoutUserInput struct {
-	Create  *VoteCreateWithoutUserInput `json:"create,omitempty"`
-	Connect *VoteWhereUniqueInput       `json:"connect,omitempty"`
+// VoteCreateManyWithoutVotedByInput input struct docs
+type VoteCreateManyWithoutVotedByInput struct {
+	Create  *VoteCreateWithoutVotedByInput `json:"create,omitempty"`
+	Connect *VoteWhereUniqueInput          `json:"connect,omitempty"`
 }
 
 // UserUpdateOneRequiredWithoutVotesInput input struct docs
@@ -2072,7 +2072,7 @@ type LinkSubscriptionWhereInput struct {
 
 // VoteUpdateWithoutLinkDataInput input struct docs
 type VoteUpdateWithoutLinkDataInput struct {
-	User *UserUpdateOneRequiredWithoutVotesInput `json:"user,omitempty"`
+	VotedBy *UserUpdateOneRequiredWithoutVotesInput `json:"votedBy,omitempty"`
 }
 
 // UserWhereUniqueInput input struct docs
@@ -2081,10 +2081,10 @@ type UserWhereUniqueInput struct {
 	Email *string `json:"email,omitempty"`
 }
 
-// VoteUpdateWithWhereUniqueWithoutUserInput input struct docs
-type VoteUpdateWithWhereUniqueWithoutUserInput struct {
-	Where *VoteWhereUniqueInput           `json:"where,omitempty"`
-	Data  *VoteUpdateWithoutUserDataInput `json:"data,omitempty"`
+// VoteUpdateWithWhereUniqueWithoutVotedByInput input struct docs
+type VoteUpdateWithWhereUniqueWithoutVotedByInput struct {
+	Where *VoteWhereUniqueInput              `json:"where,omitempty"`
+	Data  *VoteUpdateWithoutVotedByDataInput `json:"data,omitempty"`
 }
 
 // LinkUpsertWithWhereUniqueWithoutPostedByInput input struct docs
@@ -2094,9 +2094,9 @@ type LinkUpsertWithWhereUniqueWithoutPostedByInput struct {
 	Create *LinkCreateWithoutPostedByInput     `json:"create,omitempty"`
 }
 
-// VoteUpdateWithoutUserDataInput input struct docs
-type VoteUpdateWithoutUserDataInput struct {
-	Link *LinkUpdateOneRequiredWithoutVotesInput `json:"link,omitempty"`
+// VoteUpdateWithoutVotedByDataInput input struct docs
+type VoteUpdateWithoutVotedByDataInput struct {
+	Link *LinkUpdateOneRequiredWithoutAllVotesInput `json:"link,omitempty"`
 }
 
 // LinkUpdateManyWithoutPostedByInput input struct docs
@@ -2109,24 +2109,24 @@ type LinkUpdateManyWithoutPostedByInput struct {
 	Upsert     *LinkUpsertWithWhereUniqueWithoutPostedByInput `json:"upsert,omitempty"`
 }
 
-// LinkUpdateOneRequiredWithoutVotesInput input struct docs
-type LinkUpdateOneRequiredWithoutVotesInput struct {
-	Create  *LinkCreateWithoutVotesInput     `json:"create,omitempty"`
-	Update  *LinkUpdateWithoutVotesDataInput `json:"update,omitempty"`
-	Upsert  *LinkUpsertWithoutVotesInput     `json:"upsert,omitempty"`
-	Connect *LinkWhereUniqueInput            `json:"connect,omitempty"`
+// LinkUpdateOneRequiredWithoutAllVotesInput input struct docs
+type LinkUpdateOneRequiredWithoutAllVotesInput struct {
+	Create  *LinkCreateWithoutAllVotesInput     `json:"create,omitempty"`
+	Update  *LinkUpdateWithoutAllVotesDataInput `json:"update,omitempty"`
+	Upsert  *LinkUpsertWithoutAllVotesInput     `json:"upsert,omitempty"`
+	Connect *LinkWhereUniqueInput               `json:"connect,omitempty"`
 }
 
 // UserCreateWithoutLinksInput input struct docs
 type UserCreateWithoutLinksInput struct {
-	Name     *string                         `json:"name,omitempty"`
-	Email    *string                         `json:"email,omitempty"`
-	Password *string                         `json:"password,omitempty"`
-	Votes    *VoteCreateManyWithoutUserInput `json:"votes,omitempty"`
+	Name     *string                            `json:"name,omitempty"`
+	Email    *string                            `json:"email,omitempty"`
+	Password *string                            `json:"password,omitempty"`
+	Votes    *VoteCreateManyWithoutVotedByInput `json:"votes,omitempty"`
 }
 
-// LinkUpdateWithoutVotesDataInput input struct docs
-type LinkUpdateWithoutVotesDataInput struct {
+// LinkUpdateWithoutAllVotesDataInput input struct docs
+type LinkUpdateWithoutAllVotesDataInput struct {
 	Description *string                         `json:"description,omitempty"`
 	Url         *string                         `json:"url,omitempty"`
 	PostedBy    *UserUpdateOneWithoutLinksInput `json:"postedBy,omitempty"`
@@ -2134,8 +2134,8 @@ type LinkUpdateWithoutVotesDataInput struct {
 
 // VoteCreateInput input struct docs
 type VoteCreateInput struct {
-	Link *LinkCreateOneWithoutVotesInput `json:"link,omitempty"`
-	User *UserCreateOneWithoutVotesInput `json:"user,omitempty"`
+	Link    *LinkCreateOneWithoutAllVotesInput `json:"link,omitempty"`
+	VotedBy *UserCreateOneWithoutVotesInput    `json:"votedBy,omitempty"`
 }
 
 // VoteUpdateManyWithoutLinkInput input struct docs
@@ -2154,17 +2154,17 @@ type UserUpsertWithoutLinksInput struct {
 	Create *UserCreateWithoutLinksInput     `json:"create,omitempty"`
 }
 
-// VoteUpsertWithWhereUniqueWithoutUserInput input struct docs
-type VoteUpsertWithWhereUniqueWithoutUserInput struct {
-	Where  *VoteWhereUniqueInput           `json:"where,omitempty"`
-	Update *VoteUpdateWithoutUserDataInput `json:"update,omitempty"`
-	Create *VoteCreateWithoutUserInput     `json:"create,omitempty"`
+// VoteUpsertWithWhereUniqueWithoutVotedByInput input struct docs
+type VoteUpsertWithWhereUniqueWithoutVotedByInput struct {
+	Where  *VoteWhereUniqueInput              `json:"where,omitempty"`
+	Update *VoteUpdateWithoutVotedByDataInput `json:"update,omitempty"`
+	Create *VoteCreateWithoutVotedByInput     `json:"create,omitempty"`
 }
 
-// LinkUpsertWithoutVotesInput input struct docs
-type LinkUpsertWithoutVotesInput struct {
-	Update *LinkUpdateWithoutVotesDataInput `json:"update,omitempty"`
-	Create *LinkCreateWithoutVotesInput     `json:"create,omitempty"`
+// LinkUpsertWithoutAllVotesInput input struct docs
+type LinkUpsertWithoutAllVotesInput struct {
+	Update *LinkUpdateWithoutAllVotesDataInput `json:"update,omitempty"`
+	Create *LinkCreateWithoutAllVotesInput     `json:"create,omitempty"`
 }
 
 // VoteUpsertWithWhereUniqueWithoutLinkInput input struct docs
@@ -2191,14 +2191,14 @@ type LinkCreateInput struct {
 	Description *string                         `json:"description,omitempty"`
 	Url         *string                         `json:"url,omitempty"`
 	PostedBy    *UserCreateOneWithoutLinksInput `json:"postedBy,omitempty"`
-	Votes       *VoteCreateManyWithoutLinkInput `json:"votes,omitempty"`
+	AllVotes    *VoteCreateManyWithoutLinkInput `json:"allVotes,omitempty"`
 }
 
 // LinkUpdateWithoutPostedByDataInput input struct docs
 type LinkUpdateWithoutPostedByDataInput struct {
 	Description *string                         `json:"description,omitempty"`
 	Url         *string                         `json:"url,omitempty"`
-	Votes       *VoteUpdateManyWithoutLinkInput `json:"votes,omitempty"`
+	AllVotes    *VoteUpdateManyWithoutLinkInput `json:"allVotes,omitempty"`
 }
 
 // NodeExec docs
@@ -2404,14 +2404,14 @@ func (instance *VoteExec) Link() *LinkExec {
 	}
 }
 
-// User docs - executable for types
-func (instance *VoteExec) User() *UserExec {
+// VotedBy docs - executable for types
+func (instance *VoteExec) VotedBy() *UserExec {
 	var args []GraphQLArg
 
 	instance.stack = append(instance.stack, Instruction{
-		Name: "user",
+		Name: "votedBy",
 		Field: GraphQLField{
-			Name:       "user",
+			Name:       "votedBy",
 			TypeName:   "User",
 			TypeFields: []string{"id", "name", "email", "password"},
 		},
@@ -5043,7 +5043,7 @@ func (instance *LinkExec) PostedBy() *UserExec {
 	}
 }
 
-type VotesParamsExec struct {
+type AllVotesParamsExec struct {
 	Where   *VoteWhereInput
 	OrderBy *VoteOrderByInput
 	Skip    *int32
@@ -5053,8 +5053,8 @@ type VotesParamsExec struct {
 	Last    *int32
 }
 
-// Votes docs - executable for types
-func (instance *LinkExec) Votes(params *VotesParamsExec) *VoteExecArray {
+// AllVotes docs - executable for types
+func (instance *LinkExec) AllVotes(params *AllVotesParamsExec) *VoteExecArray {
 	var args []GraphQLArg
 
 	if params != nil {
@@ -5125,9 +5125,9 @@ func (instance *LinkExec) Votes(params *VotesParamsExec) *VoteExecArray {
 	}
 
 	instance.stack = append(instance.stack, Instruction{
-		Name: "votes",
+		Name: "allVotes",
 		Field: GraphQLField{
-			Name:       "votes",
+			Name:       "allVotes",
 			TypeName:   "Vote",
 			TypeFields: []string{"id"},
 		},

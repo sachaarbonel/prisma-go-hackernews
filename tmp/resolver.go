@@ -31,7 +31,7 @@ type linkResolver struct{ *Resolver }
 func (r *linkResolver) PostedBy(ctx context.Context, obj *prisma.Link) (*prisma.User, error) {
 	panic("not implemented")
 }
-func (r *linkResolver) Votes(ctx context.Context, obj *prisma.Link) ([]prisma.Vote, error) {
+func (r *linkResolver) AllVotes(ctx context.Context, obj *prisma.Link) ([]prisma.Vote, error) {
 	panic("not implemented")
 }
 
@@ -67,6 +67,6 @@ type voteResolver struct{ *Resolver }
 func (r *voteResolver) Link(ctx context.Context, obj *prisma.Vote) (prisma.Link, error) {
 	panic("not implemented")
 }
-func (r *voteResolver) User(ctx context.Context, obj *prisma.Vote) (prisma.User, error) {
+func (r *voteResolver) VotedBy(ctx context.Context, obj *prisma.Vote) (prisma.User, error) {
 	panic("not implemented")
 }

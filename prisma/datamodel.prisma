@@ -4,7 +4,7 @@ type Link {
   description: String!
   url: String!
   postedBy: User
-  votes: [Vote!]!
+  allVotes: [Vote!]! 
 }
 
 type User {
@@ -12,12 +12,12 @@ type User {
   name: String!
   email: String! @unique
   password: String!
-  links: [Link!]!
-  votes: [Vote!]!
+  links: [Link!]! 
+  votes: [Vote!]! @relation(name: "UserVotes")
 }
 
 type Vote {
   id: ID! @unique
   link: Link!
-  user: User!
+  votedBy: User! @relation(name: "UserVotes")
 }
