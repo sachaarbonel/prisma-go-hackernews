@@ -37,7 +37,7 @@ func (r *linkResolver) AllVotes(ctx context.Context, obj *prisma.Link) ([]prisma
 
 type mutationResolver struct{ *Resolver }
 
-func (r *mutationResolver) CreateUser(ctx context.Context, name string, email string) (prisma.User, error) {
+func (r *mutationResolver) CreateUser(ctx context.Context, name string, email string, password string) (prisma.User, error) {
 	panic("not implemented")
 }
 func (r *mutationResolver) CreateLink(ctx context.Context, url string, description string) (prisma.Link, error) {
@@ -47,6 +47,9 @@ func (r *mutationResolver) CreateLink(ctx context.Context, url string, descripti
 type queryResolver struct{ *Resolver }
 
 func (r *queryResolver) Links(ctx context.Context) ([]prisma.Link, error) {
+	panic("not implemented")
+}
+func (r *queryResolver) Users(ctx context.Context) ([]prisma.User, error) {
 	panic("not implemented")
 }
 func (r *queryResolver) Me(ctx context.Context, id string) (prisma.User, error) {

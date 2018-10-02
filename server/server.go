@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"prisma-go-todo/prisma-client"
+	"prisma-go-hackernews/prisma-client"
 
 	"github.com/99designs/gqlgen/handler"
 )

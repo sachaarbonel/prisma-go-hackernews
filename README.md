@@ -9,7 +9,7 @@
 
 ```sh
 ~ $ git clone https://github.com/Sach97/prisma-go-hackernews/edit/master/README.md 
-~ $ ln -s ~/prisma-go-todo ~/go/src/prisma-go-hackernews # (convenient but not required see https://codebasecamp.com/2017/04/25/Project-Structure-Go.1/ for an explanation of symlinks )
+~ $ ln -s ~/prisma-go-hackernews ~/go/src/prisma-go-hackernews # (convenient but not required see https://codebasecamp.com/2017/04/25/Project-Structure-Go.1/ for an explanation of symlinks )
 ~ $ cd prisma-go-hackernews
 prisma-go-hackernews $ docker-compose up -d # (kill your docker container running with you have errors)
 prisma-go-hackernews $ cd prisma

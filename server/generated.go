@@ -52,12 +52,13 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateUser func(childComplexity int, name string, email string) int
+		CreateUser func(childComplexity int, name string, email string, password string) int
 		CreateLink func(childComplexity int, url string, description string) int
 	}
 
 	Query struct {
 		Links func(childComplexity int) int
+		Users func(childComplexity int) int
 		Me    func(childComplexity int, id string) int
 	}
 
@@ -82,11 +83,12 @@ type LinkResolver interface {
 	AllVotes(ctx context.Context, obj *prisma.Link) ([]prisma.Vote, error)
 }
 type MutationResolver interface {
-	CreateUser(ctx context.Context, name string, email string) (prisma.User, error)
+	CreateUser(ctx context.Context, name string, email string, password string) (prisma.User, error)
 	CreateLink(ctx context.Context, url string, description string) (prisma.Link, error)
 }
 type QueryResolver interface {
 	Links(ctx context.Context) ([]prisma.Link, error)
+	Users(ctx context.Context) ([]prisma.User, error)
 	Me(ctx context.Context, id string) (prisma.User, error)
 }
 type UserResolver interface {
@@ -118,6 +120,15 @@ func field_Mutation_createUser_args(rawArgs map[string]interface{}) (map[string]
 		}
 	}
 	args["email"] = arg1
+	var arg2 string
+	if tmp, ok := rawArgs["password"]; ok {
+		var err error
+		arg2, err = graphql.UnmarshalString(tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["password"] = arg2
 	return args, nil
 
 }
@@ -271,7 +282,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateUser(childComplexity, args["name"].(string), args["email"].(string)), true
+		return e.complexity.Mutation.CreateUser(childComplexity, args["name"].(string), args["email"].(string), args["password"].(string)), true
 
 	case "Mutation.createLink":
 		if e.complexity.Mutation.CreateLink == nil {
@@ -291,6 +302,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Links(childComplexity), true
+
+	case "Query.users":
+		if e.complexity.Query.Users == nil {
+			break
+		}
+
+		return e.complexity.Query.Users(childComplexity), true
 
 	case "Query.me":
 		if e.complexity.Query.Me == nil {
@@ -694,7 +712,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	}
 	ctx = graphql.WithResolverContext(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(ctx context.Context) (interface{}, error) {
-		return ec.resolvers.Mutation().CreateUser(ctx, args["name"].(string), args["email"].(string))
+		return ec.resolvers.Mutation().CreateUser(ctx, args["name"].(string), args["email"].(string), args["password"].(string))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -760,6 +778,15 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
 				out.Values[i] = ec._Query_links(ctx, field)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "users":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Query_users(ctx, field)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
@@ -831,6 +858,61 @@ func (ec *executionContext) _Query_links(ctx context.Context, field graphql.Coll
 			arr1[idx1] = func() graphql.Marshaler {
 
 				return ec._Link(ctx, field.Selections, &res[idx1])
+			}()
+		}
+		if isLen1 {
+			f(idx1)
+		} else {
+			go f(idx1)
+		}
+
+	}
+	wg.Wait()
+	return arr1
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Query_users(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	rctx := &graphql.ResolverContext{
+		Object: "Query",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(ctx context.Context) (interface{}, error) {
+		return ec.resolvers.Query().Users(ctx)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]prisma.User)
+	rctx.Result = res
+
+	arr1 := make(graphql.Array, len(res))
+	var wg sync.WaitGroup
+
+	isLen1 := len(res) == 1
+	if !isLen1 {
+		wg.Add(len(res))
+	}
+
+	for idx1 := range res {
+		idx1 := idx1
+		rctx := &graphql.ResolverContext{
+			Index:  &idx1,
+			Result: &res[idx1],
+		}
+		ctx := graphql.WithResolverContext(ctx, rctx)
+		f := func(idx1 int) {
+			if !isLen1 {
+				defer wg.Done()
+			}
+			arr1[idx1] = func() graphql.Marshaler {
+
+				return ec._User(ctx, field.Selections, &res[idx1])
 			}()
 		}
 		if isLen1 {
@@ -2609,11 +2691,12 @@ func (ec *executionContext) introspectType(name string) *introspection.Type {
 var parsedSchema = gqlparser.MustLoadSchema(
 	&ast.Source{Name: "server/schema.graphql", Input: `type Query {
   links: [Link!]!
+  users: [User!]!
   me(id:ID!): User!
 }
 
 type Mutation {
-  createUser(name: String!, email: String!): User!
+  createUser(name: String!, email: String!, password: String!): User!
   createLink(url: String!, description: String!): Link!
 }
 

@@ -8,22 +8,22 @@ services:
     environment:
       PRISMA_CONFIG: |
         port: 4466
-        #managementApiSecret: mysecret42
+        # uncomment the next line and provide the env var PRISMA_MANAGEMENT_API_SECRET=my-secret to activate cluster security
+        # managementApiSecret: my-secret
         databases:
           default:
-            connector: postgres
-            host: postgres-db
-            port: 5432
-            user: prisma
+            connector: mysql
+            host: mysql
+            port: 3306
+            user: root
             password: prisma
             migrations: true
-  postgres-db:
-    image: postgres
+  mysql:
+    image: mysql:5.7
     restart: always
     environment:
-      POSTGRES_USER: prisma
-      POSTGRES_PASSWORD: prisma
+      MYSQL_ROOT_PASSWORD: prisma
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - mysql:/var/lib/mysql
 volumes:
-  postgres:
+  mysql:

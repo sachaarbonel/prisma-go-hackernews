@@ -1,10 +1,11 @@
 type Query {
   links: [Link!]!
+  users: [User!]!
   me(id:ID!): User!
 }
 
 type Mutation {
-  createUser(name: String!, email: String!): User!
+  createUser(name: String!, email: String!, password: String!): User!
   createLink(url: String!, description: String!): Link!
 }
 
