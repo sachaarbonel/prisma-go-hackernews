@@ -30,7 +30,10 @@ func (r *Resolver) Vote() VoteResolver {
 type linkResolver struct{ *Resolver }
 
 func (r *linkResolver) PostedBy(ctx context.Context, obj *prisma.Link) (*prisma.User, error) {
-	panic("not implemented")
+	PostedBy, err := r.Prisma.Link(&prisma.LinkWhereUniqueInput{
+		ID: &obj.ID,
+	}).PostedBy().Exec()
+	return &PostedBy, err
 }
 func (r *linkResolver) AllVotes(ctx context.Context, obj *prisma.Link) ([]prisma.Vote, error) {
 	panic("not implemented")
@@ -47,7 +50,18 @@ func (r *mutationResolver) CreateUser(ctx context.Context, name string, email st
 }
 
 func (r *mutationResolver) CreateLink(ctx context.Context, url string, description string) (prisma.Link, error) {
-	panic("not implemented")
+
+	//TODO : middleware to get userid
+	userid := "cjmvspvhf00020906pgn00izs" //hardcoded
+	return r.Prisma.CreateLink(&prisma.LinkCreateInput{
+		Description: &description,
+		Url:         &url,
+		PostedBy: &prisma.UserCreateOneWithoutLinksInput{
+			Connect: &prisma.UserWhereUniqueInput{
+				ID: &userid,
+			},
+		},
+	}).Exec()
 }
 
 type queryResolver struct{ *Resolver }
