@@ -36,7 +36,10 @@ func (r *linkResolver) PostedBy(ctx context.Context, obj *prisma.Link) (*prisma.
 	return &PostedBy, err
 }
 func (r *linkResolver) AllVotes(ctx context.Context, obj *prisma.Link) ([]prisma.Vote, error) {
-	panic("not implemented")
+	AllVotes, err := r.Prisma.Link(&prisma.LinkWhereUniqueInput{
+		ID: &obj.ID,
+	}).AllVotes(nil).Exec()
+	return AllVotes, err
 }
 
 type mutationResolver struct{ *Resolver }
@@ -64,14 +67,32 @@ func (r *mutationResolver) CreateLink(ctx context.Context, url string, descripti
 	}).Exec()
 }
 
+func (r *mutationResolver) UpVote(ctx context.Context, linkId string) (prisma.Vote, error) {
+	//TODO : middleware to get userid
+	userid := "cjmvspvhf00020906pgn00izs" //hardcoded
+	return r.Prisma.CreateVote(&prisma.VoteCreateInput{
+		Link: &prisma.LinkCreateOneWithoutAllVotesInput{
+			Connect: &prisma.LinkWhereUniqueInput{
+				ID: &linkId,
+			},
+		},
+		VotedBy: &prisma.UserCreateOneWithoutVotesInput{
+			Connect: &prisma.UserWhereUniqueInput{
+				ID: &userid,
+			},
+		},
+	}).Exec()
+}
+
 type queryResolver struct{ *Resolver }
 
 func (r *queryResolver) Links(ctx context.Context) ([]prisma.Link, error) {
-	panic("not implemented")
+	return r.Prisma.Links(nil).Exec()
 }
 func (r *queryResolver) Users(ctx context.Context) ([]prisma.User, error) {
 	return r.Prisma.Users(nil).Exec()
 }
+
 func (r *queryResolver) Me(ctx context.Context, id string) (prisma.User, error) {
 	panic("not implemented")
 }
@@ -79,17 +100,25 @@ func (r *queryResolver) Me(ctx context.Context, id string) (prisma.User, error) 
 type userResolver struct{ *Resolver }
 
 func (r *userResolver) Links(ctx context.Context, obj *prisma.User) ([]prisma.Link, error) {
-	panic("not implemented")
+	return r.Prisma.User(&prisma.UserWhereUniqueInput{
+		ID: &obj.ID,
+	}).Links(nil).Exec()
 }
 func (r *userResolver) Votes(ctx context.Context, obj *prisma.User) ([]prisma.Vote, error) {
-	panic("not implemented")
+	return r.Prisma.User(&prisma.UserWhereUniqueInput{
+		ID: &obj.ID,
+	}).Votes(nil).Exec()
 }
 
 type voteResolver struct{ *Resolver }
 
 func (r *voteResolver) Link(ctx context.Context, obj *prisma.Vote) (prisma.Link, error) {
-	panic("not implemented")
+	return r.Prisma.Vote(&prisma.VoteWhereUniqueInput{
+		ID: &obj.ID,
+	}).Link().Exec()
 }
 func (r *voteResolver) VotedBy(ctx context.Context, obj *prisma.Vote) (prisma.User, error) {
-	panic("not implemented")
+	return r.Prisma.Vote(&prisma.VoteWhereUniqueInput{
+		ID: &obj.ID,
+	}).VotedBy().Exec()
 }

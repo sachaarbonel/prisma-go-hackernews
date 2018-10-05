@@ -54,6 +54,7 @@ type ComplexityRoot struct {
 	Mutation struct {
 		CreateUser func(childComplexity int, name string, email string, password string) int
 		CreateLink func(childComplexity int, url string, description string) int
+		UpVote     func(childComplexity int, linkId string) int
 	}
 
 	Query struct {
@@ -85,6 +86,7 @@ type LinkResolver interface {
 type MutationResolver interface {
 	CreateUser(ctx context.Context, name string, email string, password string) (prisma.User, error)
 	CreateLink(ctx context.Context, url string, description string) (prisma.Link, error)
+	UpVote(ctx context.Context, linkId string) (prisma.Vote, error)
 }
 type QueryResolver interface {
 	Links(ctx context.Context) ([]prisma.Link, error)
@@ -153,6 +155,21 @@ func field_Mutation_createLink_args(rawArgs map[string]interface{}) (map[string]
 		}
 	}
 	args["description"] = arg1
+	return args, nil
+
+}
+
+func field_Mutation_upVote_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["linkId"]; ok {
+		var err error
+		arg0, err = graphql.UnmarshalString(tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["linkId"] = arg0
 	return args, nil
 
 }
@@ -295,6 +312,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateLink(childComplexity, args["url"].(string), args["description"].(string)), true
+
+	case "Mutation.upVote":
+		if e.complexity.Mutation.UpVote == nil {
+			break
+		}
+
+		args, err := field_Mutation_upVote_args(rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpVote(childComplexity, args["linkId"].(string)), true
 
 	case "Query.links":
 		if e.complexity.Query.Links == nil {
@@ -686,6 +715,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
+		case "upVote":
+			out.Values[i] = ec._Mutation_upVote(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -753,6 +787,35 @@ func (ec *executionContext) _Mutation_createLink(ctx context.Context, field grap
 	rctx.Result = res
 
 	return ec._Link(ctx, field.Selections, &res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Mutation_upVote(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := field_Mutation_upVote_args(rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx := &graphql.ResolverContext{
+		Object: "Mutation",
+		Args:   args,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(ctx context.Context) (interface{}, error) {
+		return ec.resolvers.Mutation().UpVote(ctx, args["linkId"].(string))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(prisma.Vote)
+	rctx.Result = res
+
+	return ec._Vote(ctx, field.Selections, &res)
 }
 
 var queryImplementors = []string{"Query"}
@@ -2698,6 +2761,7 @@ var parsedSchema = gqlparser.MustLoadSchema(
 type Mutation {
   createUser(name: String!, email: String!, password: String!): User!
   createLink(url: String!, description: String!): Link!
+  upVote(linkId: String!): Vote!
 }
 
 type Link {
