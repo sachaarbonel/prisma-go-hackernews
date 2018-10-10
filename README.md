@@ -1,7 +1,7 @@
 # go-graphql
 
 ## Prerequistes
-- Prisma cli version 1.17.1 installed
+- Prisma cli version 1.19.0-alpha21 installed
 - Go installed
 - gqlgen installed
 
