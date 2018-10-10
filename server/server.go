@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"prisma-go-hackernews/prisma-client"
+	"prisma-go-hackernews2/prisma-client"
 
 	"github.com/99designs/gqlgen/handler"
 )
@@ -20,7 +20,7 @@ func main() {
 
 	client := prisma.New(nil)
 	resolver := Resolver{
-		Prisma: &client,
+		Prisma: client,
 	}
 
 	http.Handle("/", handler.Playground("GraphQL playground", "/query"))
