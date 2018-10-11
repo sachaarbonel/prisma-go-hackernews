@@ -10,7 +10,7 @@ import (
 
 	graphql "github.com/99designs/gqlgen/graphql"
 	introspection "github.com/99designs/gqlgen/graphql/introspection"
-	prisma "github.com/prisma-go-hackernews/prisma-client"
+	prisma "github.com/Sach97/prisma-go-hackernews/prisma-client"
 	gqlparser "github.com/vektah/gqlparser"
 	ast "github.com/vektah/gqlparser/ast"
 )
