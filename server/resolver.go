@@ -4,7 +4,8 @@ package main
 
 import (
 	context "context"
-	prisma "prisma-go-hackernews2/prisma-client"
+
+	prisma "github.com/prisma-go-hackernews/prisma-client"
 )
 
 type Resolver struct {

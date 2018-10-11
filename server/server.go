@@ -5,9 +5,8 @@ import (
 	"net/http"
 	"os"
 
-	"prisma-go-hackernews2/prisma-client"
-
 	"github.com/99designs/gqlgen/handler"
+	prisma "github.com/prisma-go-hackernews/prisma-client"
 )
 
 const defaultPort = "4000"

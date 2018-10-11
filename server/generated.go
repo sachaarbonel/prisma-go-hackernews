@@ -5,12 +5,12 @@ package main
 import (
 	bytes "bytes"
 	context "context"
-	prisma "prisma-go-hackernews2/prisma-client"
 	strconv "strconv"
 	sync "sync"
 
 	graphql "github.com/99designs/gqlgen/graphql"
 	introspection "github.com/99designs/gqlgen/graphql/introspection"
+	prisma "github.com/prisma-go-hackernews/prisma-client"
 	gqlparser "github.com/vektah/gqlparser"
 	ast "github.com/vektah/gqlparser/ast"
 )
