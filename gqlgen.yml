@@ -8,11 +8,11 @@ exec:
   filename: server/generated.go
 models:
   User:
-    model: prisma-go-hackernews/prisma-client.User # Personnally I'm using a symlink see https://codebasecamp.com/2017/04/25/Project-Structure-Go.1/
+    model: github.com/Sach97/prisma-go-hackernews/prisma-client.User # Personnally I'm using a symlink see https://codebasecamp.com/2017/04/25/Project-Structure-Go.1/
   Link:
-    model: prisma-go-hackernews/prisma-client.Link
+    model: github.com/Sach97/prisma-go-hackernews/prisma-client.Link
   Vote:
-    model: prisma-go-hackernews/prisma-client.Vote
+    model: github.com/Sach97/prisma-go-hackernews/prisma-client.Vote
 resolver:
   # goal: copy&paste from generated file
   filename: tmp/resolver.go # trick to avoid overrides of your resolver in server/resolver.go

@@ -5,9 +5,8 @@ import (
 	"net/http"
 	"os"
 
-	"prisma-go-hackernews/prisma-client"
-
 	"github.com/99designs/gqlgen/handler"
+	prisma "github.com/Sach97/prisma-go-hackernews/prisma-client"
 )
 
 const defaultPort = "4000"
@@ -20,7 +19,7 @@ func main() {
 
 	client := prisma.New(nil)
 	resolver := Resolver{
-		Prisma: &client,
+		Prisma: client,
 	}
 
 	http.Handle("/", handler.Playground("GraphQL playground", "/query"))
