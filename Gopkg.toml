@@ -27,15 +27,15 @@
 
 [[constraint]]
   name = "github.com/99designs/gqlgen"
-  version = "0.5.0"
+  version = "0.6.0"
 
 [[constraint]]
   name = "github.com/machinebox/graphql"
   version = "0.2.2"
 
 [[constraint]]
-  name = "github.com/mitchellh/mapstructure"
-  version = "1.0.0"
+  branch = "master"
+  name = "github.com/prisma/prisma-client-lib-go"
 
 [[constraint]]
   branch = "master"
@@ -43,4 +43,4 @@
 
 [prune]
   go-tests = true
-unused-packages = true
+  unused-packages = true
